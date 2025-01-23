@@ -1,15 +1,15 @@
 import asyncio
 import json
-
+import aiohttp
 from bs4 import BeautifulSoup
-from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+import os
 
 BASE_URL = "https://phishtank.org/stats/{year}/{month}/"
 
 YEARS = range(2009, 2025)
 MONTHS = [
     "01",
-    "02",
+    "02", 
     "03",
     "04",
     "05",
@@ -33,7 +33,7 @@ async def extract_stats(html_content, url):
         title = h3.text.split(":")[0].strip()
         if title in [
             "Total Submissions",
-            "Valid Phishes",
+            "Valid Phishes", 
             "Invalid Phishes",
             "Total Votes",
             "Median Time To Verify",
@@ -51,6 +51,17 @@ async def extract_stats(html_content, url):
     return stats
 
 
+async def fetch_url(session, url):
+    try:
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.text()
+            return None
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return None
+
+
 async def main():
     final_stats = {
         "Total Submissions": {},
@@ -60,33 +71,31 @@ async def main():
         "Median Time To Verify": {},
     }
 
-    async with AsyncWebCrawler() as crawler:
+    async with aiohttp.ClientSession() as session:
         for url in URLS:
-            result = await crawler.arun(
-                url=url,
-                config=CrawlerRunConfig(
-                    css_selector=".padded", exclude_external_links=True
-                ),
-            )
-            if result.success:
+            html_content = await fetch_url(session, url)
+            if html_content:
                 year = url.split("/")[-3]
                 month = url.split("/")[-2]
-                stats = await extract_stats(result.cleaned_html, url)
+                stats = await extract_stats(html_content, url)
 
                 # Update final_stats with the results
                 for stat_type, values in stats.items():
                     if year not in final_stats[stat_type]:
                         final_stats[stat_type][year] = {}
-                    final_stats[stat_type][year][month] = values
+                    final_stats[stat_type][year][month] = values[year][month]
 
                 print(f"Processed {url}")
             else:
                 print(f"Failed to process {url}")
 
-    # Save to JSON file
-    with open("phishtank_stats.json", "w", encoding="utf-8") as f:
+    # Create datasets directory if it doesn't exist
+    os.makedirs("datasets", exist_ok=True)
+
+    # Save to JSON file in datasets folder
+    with open("datasets/phishtank_stats.json", "w", encoding="utf-8") as f:
         json.dump(final_stats, f, indent=2)
-    print("Results saved to phishtank_stats.json")
+    print("Results saved to datasets/phishtank_stats.json")
 
 
 if __name__ == "__main__":

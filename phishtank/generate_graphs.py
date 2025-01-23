@@ -9,30 +9,12 @@ from matplotlib.dates import DateFormatter, YearLocator
 from scipy import stats
 
 
-# Load and simplify JSON data
-def simplify_json_structure(data):
-    simplified = {}
-    for metric in data:
-        simplified[metric] = {}
-        for year in data[metric]:
-            for month in data[metric][year]:
-                value = data[metric][year][month][year][month]
-                if year not in simplified[metric]:
-                    simplified[metric][year] = {}
-                simplified[metric][year][month] = value
-    return simplified
-
-
-with open("phishtank_stats.json", "r") as f:
-    data = simplify_json_structure(json.load(f))
-
-
 def create_df_for_metric(data, metric):
     rows = []
     for year in data[metric]:
         for month in data[metric][year]:
             value = data[metric][year][month]
-            if value is not None:
+            if value is not None and value != '':
                 value = float(str(value).replace(",", ""))
                 date = datetime.strptime(f"{year}-{month}", "%Y-%m")
                 rows.append({"date": date, "value": value})
@@ -53,15 +35,15 @@ def format_axis(ax, title):
     plt.xticks(rotation=45)
 
 
-# Load simplified JSON
-with open("simplified_stats.json", "r") as f:
+# Load JSON data
+with open("./datasets/phishtank_stats.json", "r") as f:
     data = json.load(f)
 
 
 # Create individual DataFrames
 metrics = {
     "total_submissions": "Total Submissions",
-    "valid_phishes": "Valid Phishes",
+    "valid_phishes": "Valid Phishes", 
     "invalid_phishes": "Invalid Phishes",
     "median_time": "Median Time To Verify",
     "total_votes": "Total Votes",
@@ -118,7 +100,7 @@ format_axis(ax, "Total Phishing Submissions Over Time (2009-2017)")
 plt.ylabel("Number of Submissions", fontsize=12, labelpad=10)
 plt.legend()
 plt.tight_layout()
-plt.savefig("total_submissions.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/total_submissions.png", dpi=300, bbox_inches="tight")
 plt.close()
 
 # 2. Valid Phishes over time
@@ -138,7 +120,7 @@ format_axis(ax, "Valid Phishing Reports Over Time (2009-2017)")
 plt.ylabel("Number of Valid Phishes", fontsize=12, labelpad=10)
 plt.legend()
 plt.tight_layout()
-plt.savefig("valid_phishes.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/valid_phishes.png", dpi=300, bbox_inches="tight")
 plt.close()
 
 # 3. Invalid Phishes over time
@@ -158,10 +140,45 @@ format_axis(ax, "Invalid Phishing Reports Over Time (2009-2017)")
 plt.ylabel("Number of Invalid Phishes", fontsize=12, labelpad=10)
 plt.legend()
 plt.tight_layout()
-plt.savefig("invalid_phishes.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/invalid_phishes.png", dpi=300, bbox_inches="tight")
 plt.close()
 
-# 4. Median Time To Verify over time
+# 4. Combined phishing reports over time
+setup_scientific_plot()
+ax = plt.gca()
+
+ax.plot(
+    dfs["total_submissions"]["date"],
+    dfs["total_submissions"]["value"],
+    linewidth=2,
+    color="#1f77b4",
+    label="Total Submissions"
+)
+
+ax.plot(
+    dfs["valid_phishes"]["date"],
+    dfs["valid_phishes"]["value"],
+    linewidth=2,
+    color="#2ca02c",
+    label="Valid Phishes"
+)
+
+ax.plot(
+    dfs["invalid_phishes"]["date"],
+    dfs["invalid_phishes"]["value"],
+    linewidth=2,
+    color="#d62728",
+    label="Invalid Phishes"
+)
+
+format_axis(ax, "Combined Phishing Reports Over Time (2009-2017)")
+plt.ylabel("Number of Reports", fontsize=12, labelpad=10)
+plt.legend()
+plt.tight_layout()
+plt.savefig("./graphs/combined_reports.png", dpi=300, bbox_inches="tight")
+plt.close()
+
+# 5. Median Time To Verify over time
 setup_scientific_plot()
 plt.plot(
     dfs["median_time"]["date"],
@@ -172,39 +189,39 @@ plt.plot(
 format_axis(plt.gca(), "Median Verification Time Over Time (2009-2017)")
 plt.ylabel("Hours", fontsize=12, labelpad=10)
 plt.tight_layout()
-plt.savefig("median_time.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/median_time.png", dpi=300, bbox_inches="tight")
 plt.close()
 
-# 5. Median Time To Verify ratio to total submissions
+# 6. Median Time To Verify ratio to total submissions
 setup_scientific_plot()
 
-# Synchronizuj daty między median_time i total_submissions
+# Synchronize dates between median_time and total_submissions
 common_dates = set(dfs["median_time"]["date"]) & set(dfs["total_submissions"]["date"])
 median_time_df = dfs["median_time"][dfs["median_time"]["date"].isin(common_dates)]
 total_submissions_df = dfs["total_submissions"][
     dfs["total_submissions"]["date"].isin(common_dates)
 ]
 
-# Sortuj obie ramki danych według daty i resetuj indeksy
+# Sort both dataframes by date and reset indices
 median_time_df = median_time_df.sort_values("date").reset_index(drop=True)
 total_submissions_df = total_submissions_df.sort_values("date").reset_index(drop=True)
 
-# Upewnij się, że mamy te same daty
+# Ensure we have matching dates
 merged_df = pd.merge(
     median_time_df, total_submissions_df, on="date", suffixes=("_median", "_total")
 )
 
-# Oblicz ratio
+# Calculate ratio
 ratio = merged_df["value_median"] / merged_df["value_total"]
 
 plt.plot(merged_df["date"], ratio, linewidth=2, color="#9467bd")
 format_axis(plt.gca(), "Verification Time per Submission Ratio (2009-2017)")
 plt.ylabel("Hours per Submission", fontsize=12, labelpad=10)
 plt.tight_layout()
-plt.savefig("median_time_ratio.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/median_time_ratio.png", dpi=300, bbox_inches="tight")
 plt.close()
 
-# 6. Total Votes over time
+# 7. Total Votes over time
 setup_scientific_plot()
 plt.plot(
     dfs["total_votes"]["date"],
@@ -215,7 +232,7 @@ plt.plot(
 format_axis(plt.gca(), "Total Community Votes Over Time (2009-2017)")
 plt.ylabel("Number of Votes", fontsize=12, labelpad=10)
 plt.tight_layout()
-plt.savefig("total_votes.png", dpi=300, bbox_inches="tight")
+plt.savefig("./graphs/total_votes.png", dpi=300, bbox_inches="tight")
 plt.close()
 
 # Print basic statistics for each metric
