@@ -45,6 +45,8 @@ See the individual dataset READMEs for specific analyses and findings.
 
 ## Combined Analysis
 
+![Normalized Comparison](./normalized_comparison.png)
+
 ### PhishTank
 
 ![Combined Phishing Reports](./phishtank/graphs/combined_reports.png)
