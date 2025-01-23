@@ -43,6 +43,27 @@ The project generates various visualizations and statistical analyses:
 
 See the individual dataset READMEs for specific analyses and findings.
 
+## Combined Analysis
+
+### PhishTank
+
+![Combined Phishing Reports](./phishtank/graphs/combined_reports.png)
+![Invalid Phishes](./phishtank/graphs/invalid_phishes.png)
+![Median Time To Verify](./phishtank/graphs/median_time.png)
+![Total Submissions](./phishtank/graphs/total_submissions.png)
+![Total Votes](./phishtank/graphs/total_votes.png)
+![Median Time Ratio](./phishtank/graphs/median_time_ratio.png)
+
+### APWG
+
+![Total Submissions](./apwg/graphs/total_submissions.png)
+![Yearly Submissions](./apwg/graphs/yearly_submissions.png)
+
+### Polish CERT
+
+![Total Submissions](./cert_poland/graphs/total_incidents.png)
+![Yearly Growth](./cert_poland/graphs/yearly_growth.png)
+
 ## Usage
 
 Each dataset has its own analysis scripts:
