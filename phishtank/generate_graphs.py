@@ -103,6 +103,22 @@ plt.tight_layout()
 plt.savefig("./graphs/total_submissions.png", dpi=300, bbox_inches="tight")
 plt.close()
 
+# 1a. Total Submissions grouped by year
+setup_scientific_plot()
+yearly_submissions = dfs["total_submissions"].copy()
+yearly_submissions["year"] = yearly_submissions["date"].dt.year
+yearly_totals = yearly_submissions.groupby("year")["value"].sum()
+
+plt.plot(yearly_totals.index, yearly_totals.values, color="#1f77b4", linewidth=2, marker='o')
+plt.title("Total Yearly Phishing Submissions (2009-2017)", 
+         pad=20, fontsize=14, fontweight="bold")
+plt.xlabel("Year", fontsize=12, labelpad=10)
+plt.ylabel("Number of Submissions", fontsize=12, labelpad=10)
+plt.xticks(yearly_totals.index, rotation=45)
+plt.tight_layout()
+plt.savefig("./graphs/yearly_total_submissions.png", dpi=300, bbox_inches="tight")
+plt.close()
+
 # 2. Valid Phishes over time
 setup_scientific_plot()
 ax = plt.gca()
