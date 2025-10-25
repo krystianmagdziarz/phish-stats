@@ -1,13 +1,5 @@
 # Phishing Statistics Analysis Project
 
-## Citation
-
-If you use this data or analysis in your research, please cite:
-
-```
-Krystian MAGDZIARZ, Military University of Technology, Warsaw, Poland, 2025, https://github.com/krystianmagdziarz/phish-stats
-```
-
 ## Overview
 
 This project analyzes historical phishing statistics from multiple data sources to understand trends and patterns in phishing attacks over time. The analysis includes data from:
