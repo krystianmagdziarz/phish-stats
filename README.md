@@ -69,12 +69,7 @@ Each dataset has its own analysis scripts:
 ## Requirements
 
 - Python 3.8+
-- Required packages:
-  - matplotlib
-  - numpy
-  - pandas
-  - seaborn
-  - scipy
+- Required packages: see [requirements.txt](./requirements.txt)
 
 Install dependencies:
 

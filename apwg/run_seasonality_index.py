@@ -74,7 +74,7 @@ def main():
     )
 
     plt.title(
-        "APWG Phishing Reports Seasonality Index (2009-2024)",
+        "APWG Phishing Reports Seasonality Index (2009-2025)",
         pad=20,
         fontsize=14,
         fontweight="bold",

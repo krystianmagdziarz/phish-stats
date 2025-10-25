@@ -43,7 +43,7 @@ phishtank_df["year"] = pd.to_numeric(phishtank_df["year"])
 # Process APWG data - sum monthly submissions for each year
 apwg_yearly = {}
 for year, months in apwg_data.items():
-    if year != "2024":  # Skip incomplete current year
+    if year != "2025":  # Skip incomplete current year
         yearly_sum = sum(months.values())
         apwg_yearly[year] = yearly_sum
 
@@ -89,7 +89,7 @@ plt.plot(
 )
 
 plt.title(
-    "Normalized Phishing Incidents Across Different Sources (2009-2023)",
+    "Normalized Phishing Incidents Across Different Sources (2009-2024)",
     pad=20,
     fontsize=14,
     fontweight="bold",

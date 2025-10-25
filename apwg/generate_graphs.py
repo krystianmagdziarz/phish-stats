@@ -95,10 +95,10 @@ add_trendline(
     ax, df_early["date"], df_early["value"], "#ff7f0e", label_suffix="2009-2015 "
 )
 add_trendline(
-    ax, df_late["date"], df_late["value"], "#2ca02c", label_suffix="2015-2024 "
+    ax, df_late["date"], df_late["value"], "#2ca02c", label_suffix="2015-2025 "
 )
 
-format_axis(ax, "Total Phishing Submissions Over Time (2009-2024)")
+format_axis(ax, "Total Phishing Submissions Over Time (2009-2025)")
 plt.ylabel("Number of Submissions", fontsize=12, labelpad=10)
 plt.legend()
 plt.tight_layout()
@@ -109,6 +109,8 @@ plt.close()
 yearly_df = df.copy()
 yearly_df['year'] = yearly_df['date'].dt.year
 yearly_totals = yearly_df.groupby('year')['value'].sum().reset_index()
+# Exclude 2025 as the year is not complete yet
+yearly_totals = yearly_totals[yearly_totals['year'] < 2025]
 
 setup_scientific_plot()
 ax = plt.gca()
